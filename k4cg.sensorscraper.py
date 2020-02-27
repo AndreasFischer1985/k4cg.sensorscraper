@@ -21,6 +21,7 @@ def tick():
     c1.after(200,tick) # trigger tick each 200 ms
 
 def scrape(timestamp):
+    print("visitors:\t\t"+str(l.cget("text")))
     door_status=requests.get("https://graphs.k4cg.org/api/datasources/proxy/1/query?db=sensors&q=SELECT last(\"value\") FROM \"door_status\"").json()["results"][0]["series"][0]["values"][0]
     print("door_status:\t\t"+str(door_status))
     irc=requests.get("https://graphs.k4cg.org/api/datasources/proxy/1/query?db=sensors&q=SELECT last(\"value\") FROM \"irc\"").json()["results"][0]["series"][0]["values"][0]
@@ -45,20 +46,28 @@ def scrape(timestamp):
     p.to_csv("./daten.csv", mode='a', header=False)
 
 def minus():
-    l.config(text=int(l.cget("text"))-1)
+    x=l.cget("text")
+    if(x=="NA"):x=0
+    x=int(x)-1
+    if(x<0):x="NA"
+    l.config(text=x)
     
 def plus():
-    l.config(text=int(l.cget("text"))+1)
+    x=l.cget("text")
+    if(x=="NA"):x=-1
+    x=int(x)+1
+    if(x<0):x="NA"
+    l.config(text=x)
 
 p=pandas.DataFrame(["visitors","localtime","door_status","t0","irc","t1","network_hosts","t2","mqtt_consumer","t3","humidity","t4","tinker_noise","t5","tinker_temp","t6","darksky_ext_temp","t7","openweathermap_ext_temp","t8"]).transpose()
 p.to_csv("./daten.csv", mode='w', header=False)
 
 door_status=requests.get("https://graphs.k4cg.org/api/datasources/proxy/1/query?db=sensors&q=SELECT last(\"value\") FROM \"door_status\"").json()["results"][0]["series"][0]["values"][0]
 n=5
-if(door_status[1]==0): n=0
+if(door_status[1]==0): n="NA"
 if(len(sys.argv)>1): n=sys.argv[len(sys.argv)-1]
    
-print ("Currently there are assumed to be %s lifeforms present in the K4CG.\n" % n)
+print ("Currently there are assumed to be %s lifeforms present in the K4CG.\nData will be written to ./daten.csv each minute.\n" % n)
        
 w=tkinter.Tk()
 w.geometry("200x100")
