@@ -1,13 +1,12 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import sys
-import os
-import tkinter 
-import requests
-import time
-import pandas
-    
+import sys, os, tkinter, requests, time, pandas
+
+db1="https://graphs.k4cg.org/api/datasources/proxy/1/query?db=sensors"
+db2="https://graphs.k4cg.org/api/datasources/proxy/8/query?db=homeassi"
+db3="https://graphs.k4cg.org/api/datasources/proxy/4/query?db=wip"
+        
 def tick(): 
     global stopscraping
     t1  = time.time() #set t1 to now (in seconds since epoch)
@@ -22,53 +21,53 @@ def tick():
 
 def scrape(timestamp):
     print("visitors:\t\t "+str(l.cget("text")))
-
+    
     # db=sensors
-    #-------------
+    #-------------    
     print("\n**********\ndb=sensors\n**********\n")
-    door_status=requests.get("https://graphs.k4cg.org/api/datasources/proxy/1/query?db=sensors&q=SELECT last(\"value\") FROM \"door_status\"").json()["results"][0]["series"][0]["values"][0]
+    door_status=requests.get(db1+"&q=SELECT last(\"value\") FROM \"door_status\"").json()["results"][0]["series"][0]["values"][0]
     print("door_status:\t\t "+str(door_status))
-    irc=requests.get("https://graphs.k4cg.org/api/datasources/proxy/1/query?db=sensors&q=SELECT last(\"value\") FROM \"irc\"").json()["results"][0]["series"][0]["values"][0]
+    irc=requests.get(db1+"q=SELECT last(\"value\") FROM \"irc\"").json()["results"][0]["series"][0]["values"][0]
     print("irc:\t\t\t "+str(irc))
-    network_hosts=requests.get("https://graphs.k4cg.org/api/datasources/proxy/1/query?db=sensors&q=SELECT last(\"value\") FROM \"network_hosts\"").json()["results"][0]["series"][0]["values"][0]
+    network_hosts=requests.get(db1+"&q=SELECT last(\"value\") FROM \"network_hosts\"").json()["results"][0]["series"][0]["values"][0]
     print("network_hosts:\t\t "+str(network_hosts))
-    mqtt_consumer=requests.get("https://graphs.k4cg.org/api/datasources/proxy/4/query?db=wip&q=SELECT last(\"value\") FROM \"mqtt_consumer\"").json()
-    if(len(mqtt_consumer)>1): mqtt_consumer=mqt_consumer["results"][0]["series"][0]["values"][0] # sensor seems to be offline at the moment
+    mqtt_consumer=requests.get(db1+"&q=SELECT last(\"value\") FROM \"mqtt_consumer\"").json()
+    if(len(mqtt_consumer)>1): mqtt_consumer=mqt_consumer["results"][0]["series"][0]["values"][0] # sensor tends to be offline
     else: mqtt_consumer=[timestamp,-1]
     print("mqtt_consumer:\t\t "+str(mqtt_consumer))
-    humidity=requests.get("https://graphs.k4cg.org/api/datasources/proxy/1/query?db=sensors&q=SELECT last(\"value\") FROM \"humidity\"").json()["results"][0]["series"][0]["values"][0]
+    humidity=requests.get(db1+"&q=SELECT last(\"value\") FROM \"humidity\"").json()["results"][0]["series"][0]["values"][0]
     print("humidity:\t\t "+str(humidity))
-    tinker_noise=requests.get("https://graphs.k4cg.org/api/datasources/proxy/1/query?db=sensors&q=SELECT last(\"value\") FROM \"tinker_noise\"").json()["results"][0]["series"][0]["values"][0]
+    tinker_noise=requests.get(db1+"&q=SELECT last(\"value\") FROM \"tinker_noise\"").json()["results"][0]["series"][0]["values"][0]
     print("tinker_noise:\t\t "+str(tinker_noise))
-    tinker_temp=requests.get("https://graphs.k4cg.org/api/datasources/proxy/1/query?db=sensors&q=SELECT last(\"value\") FROM \"tinker_temp\"").json()["results"][0]["series"][0]["values"][0]
+    tinker_temp=requests.get(db1+"&q=SELECT last(\"value\") FROM \"tinker_temp\"").json()["results"][0]["series"][0]["values"][0]
     print("tinker_temp:\t\t "+str(tinker_temp))
-    darksky_ext_temp=requests.get("https://graphs.k4cg.org/api/datasources/proxy/1/query?db=sensors&q=SELECT last(\"value\") FROM \"darksky_ext_temp\"").json()["results"][0]["series"][0]["values"][0]
+    darksky_ext_temp=requests.get(db1+"&q=SELECT last(\"value\") FROM \"darksky_ext_temp\"").json()["results"][0]["series"][0]["values"][0]
     print("darksky_ext_temp:\t "+str(darksky_ext_temp))
-    openweathermap_ext_temp=requests.get("https://graphs.k4cg.org/api/datasources/proxy/1/query?db=sensors&q=SELECT last(\"value\") FROM \"openweathermap_ext_temp\"").json()["results"][0]["series"][0]["values"][0]
+    openweathermap_ext_temp=requests.get(db1+"&q=SELECT last(\"value\") FROM \"openweathermap_ext_temp\"").json()["results"][0]["series"][0]["values"][0]
     print("openweathermap_ext_temp\t:"+str(openweathermap_ext_temp))
 
     # db=homeassi
     #-------------
     print("\n***********\ndb=homeassi\n***********\n")
-    temp_ttennis=requests.get("https://graphs.k4cg.org/api/datasources/proxy/8/query?db=homeassi&q=SELECT last(\"value\") FROM \"sensor.temp_ttennis\"").json()["results"][0]["series"][0]["values"][0]
+    temp_ttennis=requests.get(db2+"&q=SELECT last(\"value\") FROM \"sensor.temp_ttennis\"").json()["results"][0]["series"][0]["values"][0]
     print("temp_ttennis:\t\t "+str(temp_ttennis))
-    temp_co2=requests.get("https://graphs.k4cg.org/api/datasources/proxy/8/query?db=homeassi&q=SELECT last(\"value\") FROM \"sensor.temp_co2\"").json()["results"][0]["series"][0]["values"][0]
+    temp_co2=requests.get(db2+"&q=SELECT last(\"value\") FROM \"sensor.temp_co2\"").json()["results"][0]["series"][0]["values"][0]
     print("temp_co2:\t\t "+str(temp_co2))
-    temp_c=requests.get("https://graphs.k4cg.org/api/datasources/proxy/8/query?db=homeassi&q=SELECT last(\"value\") FROM \"C\"").json()["results"][0]["series"][0]["values"][0]
+    temp_c=requests.get(db2+"&q=SELECT last(\"value\") FROM \"C\"").json()["results"][0]["series"][0]["values"][0]
     print("temp_c:\t\t\t "+str(temp_c))
-    sound_intensity=requests.get("https://graphs.k4cg.org/api/datasources/proxy/8/query?db=homeassi&q=SELECT last(\"value\") FROM \"sensor.sound_intensity\"").json()["results"][0]["series"][0]["values"][0]
+    sound_intensity=requests.get(db2+"&q=SELECT last(\"value\") FROM \"sensor.sound_intensity\"").json()["results"][0]["series"][0]["values"][0]
     print("sound_intensity:\t "+str(sound_intensity))
-    light=requests.get("https://graphs.k4cg.org/api/datasources/proxy/8/query?db=homeassi&q=SELECT last(\"value\") FROM \"sensor.light\"").json()["results"][0]["series"][0]["values"][0]
+    light=requests.get(db2+"&q=SELECT last(\"value\") FROM \"sensor.light\"").json()["results"][0]["series"][0]["values"][0]
     print("light:\t\t\t "+str(light))
-    co2=requests.get("https://graphs.k4cg.org/api/datasources/proxy/8/query?db=homeassi&q=SELECT last(\"value\") FROM \"sensor.co2\"").json()["results"][0]["series"][0]["values"][0]
+    co2=requests.get(db2+"&q=SELECT last(\"value\") FROM \"sensor.co2\"").json()["results"][0]["series"][0]["values"][0]
     print("co2:\t\t\t "+str(co2))
-    bier=requests.get("https://graphs.k4cg.org/api/datasources/proxy/8/query?db=homeassi&q=SELECT last(\"value\") FROM \"sensor.bier\"").json()["results"][0]["series"][0]["values"][0]
+    bier=requests.get(db2+"&q=SELECT last(\"value\") FROM \"sensor.bier\"").json()["results"][0]["series"][0]["values"][0]
     print("bier:\t\t\t "+str(bier))
-    apfelschorle=requests.get("https://graphs.k4cg.org/api/datasources/proxy/8/query?db=homeassi&q=SELECT last(\"value\") FROM \"sensor.apfelschorle\"").json()["results"][0]["series"][0]["values"][0]
+    apfelschorle=requests.get(db2+"&q=SELECT last(\"value\") FROM \"sensor.apfelschorle\"").json()["results"][0]["series"][0]["values"][0]
     print("apfelschole:\t\t "+str(apfelschorle))
-    mate_cola=requests.get("https://graphs.k4cg.org/api/datasources/proxy/8/query?db=homeassi&q=SELECT last(\"value\") FROM \"sensor.mate_cola\"").json()["results"][0]["series"][0]["values"][0]
+    mate_cola=requests.get(db2+"&q=SELECT last(\"value\") FROM \"sensor.mate_cola\"").json()["results"][0]["series"][0]["values"][0]
     print("mate_cola:\t\t "+str(mate_cola))
-    club_mate=requests.get("https://graphs.k4cg.org/api/datasources/proxy/8/query?db=homeassi&q=SELECT last(\"value\") FROM \"sensor.club_mate\"").json()["results"][0]["series"][0]["values"][0]
+    club_mate=requests.get(db2+"&q=SELECT last(\"value\") FROM \"sensor.club_mate\"").json()["results"][0]["series"][0]["values"][0]
     print("club_mate:\t\t "+str(club_mate)+"\n\n")
 
     p=pandas.DataFrame([l.cget("text"),timestamp,door_status[1],door_status[0],irc[1],irc[0],network_hosts[1],network_hosts[0],mqtt_consumer[1],mqtt_consumer[0],humidity[1],humidity[0],tinker_noise[1],tinker_noise[0],tinker_temp[1],tinker_temp[0],darksky_ext_temp[1],darksky_ext_temp[0],openweathermap_ext_temp[1],openweathermap_ext_temp[0],temp_ttennis[1],temp_ttennis[0],temp_co2[1],temp_co2[0],temp_c[1],temp_c[0],sound_intensity[1],sound_intensity[0],light[1],light[0],co2[1],co2[0],bier[1],bier[0],apfelschorle[1],apfelschorle[0],mate_cola[1],mate_cola[0],club_mate[1],club_mate[0]]).transpose()
